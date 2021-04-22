@@ -105,7 +105,7 @@ class FashionpediaDataset(utils.Dataset):
 
         fashionpedia = COCO("{}/instances_attributes_{}2020.json".format(dataset_dir, subset))
 
-        image_dir = "{}/{}_img/".format(dataset_dir, subset)
+        image_dir = "{}/{}/".format(dataset_dir, subset)
         print("Loading from:", image_dir)
               
         # All images
