@@ -99,9 +99,8 @@ class FashionpediaDataset(utils.Dataset):
         year: What dataset year to load (2014, 2017) as a string, not an integer
         class_ids: If provided, only loads images that have the given classes.
         class_map: TODO: Not implemented yet. Supports maping classes from
-            different datasets to the same class ID.
+        different datasets to the same class ID.
         """
-
 
         fashionpedia = COCO("{}/instances_attributes_{}2020.json".format(dataset_dir, subset))
 
@@ -119,14 +118,17 @@ class FashionpediaDataset(utils.Dataset):
 
         # Add images
         for i in fashionpedia.imgs.keys():
-            self.add_image(
-                "fashionpedia", image_id=i,
-                path=os.path.join(image_dir, fashionpedia.imgs[i]['file_name']),
-                width=fashionpedia.imgs[i]["width"],
-                height=fashionpedia.imgs[i]["height"],
-                annotations=fashionpedia.loadAnns(fashionpedia.getAnnIds(
-                imgIds=[i], catIds=class_ids, iscrowd=None)))
-
+        # Check image file exists
+            filepath = os.path.join(image_dir, fashionpedia.imgs[i]['file_name'])
+            if os.path.exists(filepath):
+                self.add_image(
+                    "fashionpedia", image_id=i,
+                    path=filepath,
+                    width=fashionpedia.imgs[i]["width"],
+                    height=fashionpedia.imgs[i]["height"],
+                    annotations=fashionpedia.loadAnns(fashionpedia.getAnnIds(
+                    imgIds=[i], catIds=class_ids, iscrowd=None)))
+                    
         return fashionpedia
 
     def load_mask(self, image_id):
