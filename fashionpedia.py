@@ -48,7 +48,8 @@ import urllib.request
 import shutil
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("../../")
+#ROOT_DIR = os.path.abspath("../../")
+ROOT_DIR = os.path.abspath(".")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -115,6 +116,7 @@ class FashionpediaDataset(utils.Dataset):
         for i in class_ids:
             self.add_class("fashionpedia", i, fashionpedia.loadCats(i)[0]["name"])
             # print(i, fashionpedia.loadCats(i)[0]["name"])
+
 
         # Add images
         for i in fashionpedia.imgs.keys():
@@ -298,7 +300,7 @@ if __name__ == '__main__':
 
     # Load weights
     print("Loading weights ", model_path)
-    if args.model.lower() == "./coco/mask_rcnn_coco.h5":
+    if args.model.lower()[-17:] == "mask_rcnn_coco.h5":
         # Exclude the last layers because they require a matching
         # number of classes
         model.load_weights(model_path, by_name=True, exclude=[
@@ -330,7 +332,7 @@ if __name__ == '__main__':
         print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=40,
+                    epochs=30, # 40,
                     layers='heads',
                     augmentation=augmentation)
         print("Stage 1 complete")
@@ -340,19 +342,21 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=120,
+                    epochs=20, # 120,
                     layers='4+',
                     augmentation=augmentation)
-
+        print("Stage 2 complete")
+        
         # Training - Stage 3
         # Fine tune all layers
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
-                    epochs=160,
+                    epochs=20, # 160,
                     layers='all',
                     augmentation=augmentation)
-
+        print("Stage 3 complete")
+        
     else:
         print("'{}' is not recognized. "
               "Use 'train' or 'evaluate'".format(args.command))
